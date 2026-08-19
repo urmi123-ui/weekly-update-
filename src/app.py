@@ -27,11 +27,15 @@ load_dotenv()
 
 app = FastAPI(title="Weekly Review Pulse Local Backend")
 
-# Enable CORS for React Frontend (on port 5173)
+# Enable CORS for React Frontend (supports local and production URLs via ALLOWED_CORS_ORIGINS)
+cors_origins = os.getenv("ALLOWED_CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173").split(",")
+cors_origins = [origin.strip() for origin in cors_origins]
+allow_all = "*" in cors_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=not allow_all,
     allow_methods=["*"],
     allow_headers=["*"],
 )
